@@ -11,8 +11,8 @@ using Micro = std::micro;
 using Milli = std::milli;
 using Seconds = std::ratio<1>;
 
-template<typename T>
-long double measureAverageTime(const unsigned numOfTests, const std::function<Solution()>& f)
+template<typename T, typename C>
+long double measureAverageTime(const unsigned numOfTests, const std::function<C()>& f)
 {
     if (!numOfTests)
     {
@@ -29,9 +29,6 @@ long double measureAverageTime(const unsigned numOfTests, const std::function<So
 
 int main(int argc, char **argv)
 {
-//    TravellingSalesmanProblem tsp(12, 1, 100);
-//    std::cout << measureAverageTime<Seconds>(1, std::bind(&TravellingSalesmanProblem::bruteForce, &tsp))
-//            << std::endl;
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

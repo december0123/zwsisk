@@ -7,17 +7,15 @@
 class UndirectedGraph
 {
 public:
-    UndirectedGraph() = delete;
-
     // Creates a graph with numOfVertices vertices and no edges
     UndirectedGraph(const unsigned numOfVertices);
 
-    // Creates a full graph with numOfVertices vertices
+    // Creates a complete graph with numOfVertices vertices
     // and random edges with cost <minCost; maxCost>
     UndirectedGraph(const unsigned numOfVertices, const unsigned minCost, const unsigned maxCost);
 
     UndirectedGraph(std::string filePath);
-    UndirectedGraph(const UndirectedGraph& rhs) = default;
+    UndirectedGraph(const UndirectedGraph& rhs);
     UndirectedGraph(UndirectedGraph&& rhs);
     ~UndirectedGraph() = default;
 
@@ -37,6 +35,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const UndirectedGraph& rhs);
 
 private:
+    UndirectedGraph() = default;
     void swap(UndirectedGraph& rhs);
 
     unsigned numOfVertices_ = 0U;

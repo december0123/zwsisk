@@ -36,13 +36,13 @@ Solution TravellingSalesmanProblem::bruteForce() const
     Route bestRoute_;
     Route route { generatePrimitiveRoute() };
 
-    unsigned currDistance = 0U;
+    unsigned currentDistance = 0U;
     do
     {
-        currDistance = calcCostOfRoute(route);
-        if (currDistance < shortestDistance_)
+        currentDistance = calcCostOfRoute(route);
+        if (currentDistance < shortestDistance_)
         {
-            shortestDistance_ = currDistance;
+            shortestDistance_ = currentDistance;
             bestRoute_ = route;
         }
     }

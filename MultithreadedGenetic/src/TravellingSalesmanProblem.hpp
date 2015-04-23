@@ -23,6 +23,7 @@ public:
     TravellingSalesmanProblem(const unsigned numOfCities, const unsigned minCost,
             const unsigned maxCost);
     TravellingSalesmanProblem(std::string pathToFile);
+    TravellingSalesmanProblem(TravellingSalesmanProblem&&) = default;
     ~TravellingSalesmanProblem() = default;
 
     unsigned getSumOfCosts() const;

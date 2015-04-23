@@ -16,11 +16,14 @@ UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned mi
 {
     std::uniform_int_distribution<unsigned> distr { minCost, maxCost };
     std::mt19937_64 randomGen(std::random_device { }());
+    unsigned weight;
     for (auto& i : matrix_)
     {
         for (int j = 0; j < numOfVertices; ++j)
         {
-            i.emplace_back(distr(randomGen));
+            weight = distr(randomGen);
+            sumOfWeights_ += weight;
+            i.emplace_back(weight);
         }
     }
 }
@@ -72,10 +75,17 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
     }
 }
 
+UndirectedGraph::UndirectedGraph(const UndirectedGraph& rhs)
+    : numOfVertices_{rhs.numOfVertices_}, numOfEdges_{rhs.numOfEdges_},
+      sumOfWeights_{rhs.sumOfWeights_}, matrix_{rhs.matrix_} {}
+
 UndirectedGraph::UndirectedGraph(UndirectedGraph&& rhs)
-        : UndirectedGraph(rhs.numOfVertices_)
+    : numOfVertices_{rhs.numOfVertices_}, numOfEdges_{rhs.numOfEdges_},
+      sumOfWeights_{rhs.sumOfWeights_}, matrix_{std::move(rhs.matrix_)}
 {
-    swap(rhs);
+    rhs.numOfVertices_ = 0U;
+    rhs.numOfEdges_ = 0U;
+    rhs.sumOfWeights_ = 0U;
 }
 
 UndirectedGraph& UndirectedGraph::operator=(UndirectedGraph rhs)
