@@ -167,13 +167,14 @@ TEST_F(UndirectedGraphFixture, canBeConstructedFromFile)
     const std::string graphPrint { ss.str() };
     ss.str("");
     ss.clear();
-    ss << "         0         1         2\n";
-    ss << "         1         0         3\n";
-    ss << "         2         3         0\n";
+    ss << "         0         1         1         8\n";
+    ss << "         1         0         4         1\n";
+    ss << "         1         4         0         1\n";
+    ss << "         8         1         1         0\n";
     ASSERT_EQ(ss.str(), graphPrint);
-    ASSERT_EQ(3, g_.getNumberOfEdges());
-    ASSERT_EQ(3, g_.getNumberOfVertices());
-    ASSERT_EQ(6, g_.getSumOfWeights());
+    ASSERT_EQ(6, g_.getNumberOfEdges());
+    ASSERT_EQ(4, g_.getNumberOfVertices());
+    ASSERT_EQ(16, g_.getSumOfWeights());
 }
 
 TEST_F(UndirectedGraphFixture, canBeConstructedAsARandomInstanceAndPrintsNicely)

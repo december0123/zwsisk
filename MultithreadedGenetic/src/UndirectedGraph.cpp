@@ -7,8 +7,8 @@
 #include <string>
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices)
-        : numOfVertices_ { numOfVertices }, matrix_{numOfVertices,
-            std::vector<unsigned>(numOfVertices, 0 )} {}
+        : numOfVertices_ { numOfVertices },
+          matrix_{numOfVertices, std::vector<unsigned>(numOfVertices, 0 )} {}
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned minCost,
         const unsigned maxCost)
@@ -31,7 +31,11 @@ UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned mi
 UndirectedGraph::UndirectedGraph(std::string filePath)
 {
     std::ifstream file(filePath);
-    if (file)
+    if (!file)
+    {
+        throw std::runtime_error { " * Couldn't open given file * " };
+    }
+    else
     {
         std::string line;
         do
@@ -68,10 +72,6 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
                 }
             }
         }
-    }
-    else
-    {
-        throw std::runtime_error { " * Couldn't open given file * " };
     }
 }
 

@@ -3,11 +3,13 @@
 
 #include "UndirectedGraph.hpp"
 
+#include <random>
 #include <string>
 #include <vector>
 
 using Graph = UndirectedGraph;
 using Route = std::vector<unsigned>;
+using Population = std::vector<Route>;
 
 struct Solution
 {
@@ -31,16 +33,23 @@ public:
     unsigned getCostBetweenCities(const unsigned from, const unsigned to) const;
 
     Solution bruteForce() const;
-    Solution genetic(const unsigned initPopulationSize, const unsigned mutationRate,
+    Solution genetic(const unsigned populationSize, const long double mutationRate,
             const unsigned numOfGenerations) const;
+
 private:
     Graph graph_;
     unsigned numOfCities_ = 0U;
     unsigned sumOfCosts_ = 0U;
+    mutable std::mt19937_64 randomGen_{std::random_device{}()};
 
     unsigned calcCostOfRoute(const Route& route) const;
 
     Route generatePrimitiveRoute() const;
+    Population generateInitPopulation(const unsigned populationSize) const;
+    Route pickFitParent(const Population& population) const;
+    Route createOffspring(Route parent_a, Route parent_b) const;
+    void mutate(Route& route) const;
+    bool routeContainsCity(const Route& route, const unsigned city) const;
 };
 
 #endif /* TRAVELLINGSALESMANPROBLEM_HPP_ */

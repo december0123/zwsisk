@@ -21,14 +21,14 @@ protected:
 
 TEST_F(TravellingSalesmanProblemFixture, canBeCreatedFromFile)
 {
-    ASSERT_EQ(6, tsp_->getSumOfCosts());
-    ASSERT_EQ(3, tsp_->getNumOfCities());
-    ASSERT_EQ(3, tsp_->getCostBetweenCities(1, 2));
+    ASSERT_EQ(16, tsp_->getSumOfCosts());
+    ASSERT_EQ(4, tsp_->getNumOfCities());
+    ASSERT_EQ(4, tsp_->getCostBetweenCities(1, 2));
 }
 
 TEST_F(TravellingSalesmanProblemFixture, findsOptimalPath_bruteForce)
 {
     Solution s = tsp_->bruteForce();
-    ASSERT_EQ(6, s.cost_);
-    ASSERT_THAT(s.route_, ElementsAre(0, 1, 2));
+    ASSERT_EQ(4, s.cost_);
+    ASSERT_THAT(s.route_, ElementsAre(0, 1, 3, 2));
 }
