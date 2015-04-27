@@ -71,10 +71,7 @@ unsigned TravellingSalesmanProblem::calcCostOfRoute(const Route& route) const
 Route TravellingSalesmanProblem::generatePrimitiveRoute() const
 {
     Route route(numOfCities_);
-    for (unsigned i = 0; i < numOfCities_; ++i)
-    {
-        route[i] = i;
-    }
+    std::iota(route.begin(), route.end(), 0);
     return route;
 }
 
@@ -117,7 +114,7 @@ std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
 
     for (unsigned i = 0; i < populationSize; ++i)
     {
-        std::shuffle(route.begin(), route.end(), std::mt19937_64{std::random_device{}()});
+        std::shuffle(route.begin(), route.end(), randomGen_);
         population.push_back(route);
     }
     population.shrink_to_fit();
@@ -128,16 +125,15 @@ Route TravellingSalesmanProblem::pickFitParent(const Population& population) con
 {
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
-    Population potentialParents;
+    Population potentialParents(alphaSize);
     for (auto i = 0U; i < alphaSize; ++i)
     {
-        potentialParents.push_back(population[i]);
+        potentialParents[i] = population[distr(randomGen_)];
     }
-    std::sort(potentialParents.begin(), potentialParents.end(),
+    return *std::max_element(potentialParents.begin(), potentialParents.end(),
             [this](const Route& lhs, const Route& rhs) {
                 return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
     });
-    return potentialParents.front();
 }
 
 Route TravellingSalesmanProblem::createOffspring(Route parent_a, Route parent_b) const

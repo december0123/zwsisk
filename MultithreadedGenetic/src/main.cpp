@@ -30,23 +30,24 @@ long double measureAverageTime(const int numOfTests, const std::function<C()>& f
 int main(int argc, char **argv)
 {
 //    TravellingSalesmanProblem tsp{"/home/dec/studia/sem6/zwsisk/graph.txt"};
-    TravellingSalesmanProblem tsp(10, 1, 20);
-    std::cout << "Genetyczny srednio zajmuje " << measureAverageTime<Milli, Solution>(50,
-            std::bind(&TravellingSalesmanProblem::genetic, &tsp, 10, 1, 100)) << "ms" << std::endl;
+    TravellingSalesmanProblem tsp(11, 1, 20);
+//    std::cout << "Genetyczny srednio zajmuje " << measureAverageTime<Milli, Solution>(50,
+//            std::bind(&TravellingSalesmanProblem::genetic, &tsp, 10, 1, 100)) << "ms" << std::endl;
 //    std::cout << "Przeglad zupelny srednio zajmuje " << measureAverageTime<Milli, Solution>(50,
 //            std::bind(&TravellingSalesmanProblem::bruteForce, &tsp)) << "ms" << std::endl;
-//    std::cout << s.cost_ << std::endl;
-//    for (auto& i : s.route_)
-//    {
-//        std::cout << i << " ";
-//    }
-//    std::cout << std::endl;
-//    s = tsp.bruteForce();
-//    std::cout << s.cost_ << std::endl;
-//    for (auto& i : s.route_)
-//    {
-//        std::cout << i << " ";
-//    }
+    Solution s = tsp.genetic(10, 0.5, 100);
+    std::cout << s.cost_ << std::endl;
+    for (auto& i : s.route_)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    s = tsp.bruteForce();
+    std::cout << s.cost_ << std::endl;
+    for (auto& i : s.route_)
+    {
+        std::cout << i << " ";
+    }
 
 //    ::testing::InitGoogleTest(&argc, argv);
 //    return RUN_ALL_TESTS();
