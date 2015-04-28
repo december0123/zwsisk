@@ -46,10 +46,11 @@ private:
 
     Route generatePrimitiveRoute() const;
     Population generateInitPopulation(const unsigned populationSize) const;
-    Route pickFitParent(const Population& population) const;
+    Route pickParent(const Population& population) const;
     Route createOffspring(Route parent_a, Route parent_b) const;
     void mutate(Route& route) const;
     bool routeContainsCity(const Route& route, const unsigned city) const;
+    Route getFittest(const Population& population) const;
 };
 
 #endif /* TRAVELLINGSALESMANPROBLEM_HPP_ */

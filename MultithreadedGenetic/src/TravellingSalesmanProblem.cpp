@@ -1,7 +1,6 @@
 #include "TravellingSalesmanProblem.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <random>
 #include <utility>
 
@@ -78,16 +77,17 @@ Route TravellingSalesmanProblem::generatePrimitiveRoute() const
 Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
         const long double mutationProbability, const unsigned numOfGenerations) const
 {
-    Population population { generateInitPopulation(populationSize) };
+    Population population { std::move(generateInitPopulation(populationSize)) };
     std::uniform_real_distribution<long double> distr(0, 1);
 
     for (auto i = 0U; i < numOfGenerations; ++i)
     {
         Population nextGen;
-        for (auto j = 0U; j < populationSize - 1; ++j)
+        nextGen.push_back(getFittest(population));
+        for (auto j = 0U; j < populationSize - 2; ++j)
         {
-            Route parent_a = pickFitParent(population);
-            Route parent_b = pickFitParent(population);
+            Route parent_a = pickParent(population);
+            Route parent_b = pickParent(population);
             Route offspring{createOffspring(std::move(parent_a), std::move(parent_b))};
             if (distr(randomGen_) <= mutationProbability)
             {
@@ -109,19 +109,18 @@ Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
 std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
         const unsigned populationSize) const
 {
-    Population population;
-    Route route { generatePrimitiveRoute() };
+    Population population(populationSize);
+    Route route { std::move(generatePrimitiveRoute()) };
 
     for (unsigned i = 0; i < populationSize; ++i)
     {
         std::shuffle(route.begin(), route.end(), randomGen_);
-        population.push_back(route);
+        population[i] = route;
     }
-    population.shrink_to_fit();
     return population;
 }
 
-Route TravellingSalesmanProblem::pickFitParent(const Population& population) const
+Route TravellingSalesmanProblem::pickParent(const Population& population) const
 {
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
@@ -130,10 +129,7 @@ Route TravellingSalesmanProblem::pickFitParent(const Population& population) con
     {
         potentialParents[i] = population[distr(randomGen_)];
     }
-    return *std::max_element(potentialParents.begin(), potentialParents.end(),
-            [this](const Route& lhs, const Route& rhs) {
-                return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
-    });
+    return getFittest(std::move(potentialParents));
 }
 
 Route TravellingSalesmanProblem::createOffspring(Route parent_a, Route parent_b) const
@@ -176,4 +172,12 @@ void TravellingSalesmanProblem::mutate(Route& route) const
 bool TravellingSalesmanProblem::routeContainsCity(const Route& route, const unsigned city) const
 {
     return std::find(route.begin(), route.end(), city) != route.end();
+}
+
+Route TravellingSalesmanProblem::getFittest(const Population& population) const
+{
+    return *std::max_element(population.begin(), population.end(),
+            [this](const Route& lhs, const Route& rhs) {
+                return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
+    });
 }
