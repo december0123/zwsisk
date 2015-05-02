@@ -1,19 +1,12 @@
-/*
- * ProjectUtilities.hpp
- *
- *  Created on: 2 maj 2015
- *      Author: dec
- */
-
 #ifndef PROJECTUTILITIES_HPP_
 #define PROJECTUTILITIES_HPP_
 
-#include <array>
 #include <atomic>
 #include <chrono>
-#include <iostream>
 #include <functional>
 #include <future>
+#include <thread>
+#include <vector>
 
 using Clock = std::chrono::high_resolution_clock;
 using Micro = std::micro;
@@ -24,53 +17,84 @@ namespace ProjectUtilities
 {
 
 template<typename T, typename C>
-long double measureAverageTime(const int numOfTests, const std::function<C()>& f)
+long double measureAverageTime(const unsigned numOfTests, const std::function<C()>& f)
 {
     if (!numOfTests)
     {
         return 0.0;
     }
-    auto start = Clock::now();
-    for (int i = 0; i < numOfTests; ++i)
+    unsigned times { 0 };
+    for (unsigned i = 0; i < numOfTests; ++i)
     {
+        auto start = Clock::now();
         f();
+        auto end = Clock::now();
+        times += std::chrono::duration<long double, T>(end - start).count();
     }
-    auto end = Clock::now();
-    return std::chrono::duration<long double, T>(end - start).count() / numOfTests;
+
+    return times / static_cast<long double>(numOfTests);
+}
+
+long double measureAverageGeneticTime(const unsigned numOfTests, const unsigned numOfCities,
+        const unsigned minCost, const unsigned maxCost)
+{
+    const TravellingSalesmanProblem tsp(numOfCities, minCost, maxCost);
+    return measureAverageTime<Milli, Solution>(numOfTests,
+            std::bind(&TravellingSalesmanProblem::genetic, &tsp, 50, 0.5, 100));
+}
+
+long double measureAverageBruteForceTime(const unsigned numOfTests, const unsigned numOfCities,
+        const unsigned minCost, const unsigned maxCost)
+{
+    const TravellingSalesmanProblem tsp(numOfCities, minCost, maxCost);
+    return measureAverageTime<Milli, Solution>(numOfTests,
+            std::bind(&TravellingSalesmanProblem::bruteForce, &tsp));
 }
 
 template<typename T>
-long double measureQuality(const int numOfTests, const std::function<T()>& f,
+long double measureAverageRelativeError(const int numOfTests, const std::function<T()>& f,
         const std::function<T()>& f2)
 {
-    constexpr unsigned numOfThreads = 5;
+    const unsigned numOfThreads = std::thread::hardware_concurrency();
 
-    std::atomic<unsigned> genCost { 0 };
+    std::atomic<unsigned> sumOfGenCosts { 0 };
     auto mGen = [&]()
     {
-        for (auto i = 0; i < numOfTests / numOfThreads; ++i)
+        for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
         {
-            genCost += f2().cost_;
+            sumOfGenCosts += f2().cost_;
         }
     };
 
-    std::array<std::thread, numOfThreads> threads;
-    ;
+    std::vector<std::thread> threads(numOfThreads);
     for (auto& t : threads)
     {
         t = std::thread { mGen };
     }
 
-    long double bf = f().cost_;
+    const long double bf = f().cost_;
 
-    for (auto& i : threads)
+    for (auto& t : threads)
     {
-        i.join();
+        t.join();
     }
 
-    long double witam { static_cast<long double>(genCost.load()) / numOfTests };
+    long double genCost { static_cast<long double>(sumOfGenCosts.load()) / numOfTests };
 
-    return std::abs((bf - witam) / witam);
+    return std::abs((bf - genCost) / genCost);
+}
+
+/*
+ * Launches BruteForce and Genetic to calculate relative error.
+ * Remember that BruteForce is O(n!) so use it carefuly.
+ */
+long double measureGeneticQuality(const unsigned numOfTests, const unsigned numOfCities,
+        const unsigned minCost, const unsigned maxCost)
+{
+    const TravellingSalesmanProblem tsp(numOfCities, minCost, maxCost);
+    return measureAverageRelativeError<Solution>(numOfTests,
+            std::bind(&TravellingSalesmanProblem::bruteForce, &tsp),
+            std::bind(&TravellingSalesmanProblem::genetic, &tsp, 200, 0.5, 100));
 }
 
 }
