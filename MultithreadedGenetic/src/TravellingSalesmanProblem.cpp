@@ -82,27 +82,26 @@ Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
 
     for (auto i = 0U; i < numOfGenerations; ++i)
     {
-        Population nextGen;
-        nextGen.push_back(getFittest(population));
-        for (auto j = 0U; j < populationSize - 2; ++j)
+        Population nextGen(populationSize);
+        nextGen[0] = getFittest(population);
+        for (auto j = 1U; j < populationSize; ++j)
         {
-            Route parent_a = pickParent(population);
-            Route parent_b = pickParent(population);
+            Route parent_a{std::move(pickParent(population))};
+            Route parent_b{std::move(pickParent(population))};
             Route offspring{createOffspring(std::move(parent_a), std::move(parent_b))};
             if (distr(randomGen_) <= mutationProbability)
             {
                 mutate(offspring);
             }
-            nextGen.push_back(std::move(offspring));
+            nextGen[j] = std::move(offspring);
         }
-        nextGen.shrink_to_fit();
         std::sort(nextGen.begin(), nextGen.end(),
                 [this](const Route& lhs, const Route& rhs) {
                     return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
         });
         population = std::move(nextGen);
     }
-
+    Route best{getFittest(population)};
     return {calcCostOfRoute(population.front()), population.front()};
 }
 

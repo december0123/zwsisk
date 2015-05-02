@@ -40,7 +40,7 @@ TEST_F(TravellingSalesmanProblemFixture, findsAPath_genetic)
 {
     Solution s = tsp_->genetic(50, 0.5, 100);
     ASSERT_TRUE(s.cost_);
-    Route test(4);
+    Route test(s.route_.size());
     std::iota(test.begin(), test.end(), 0);
     std::sort(s.route_.begin(), s.route_.end());
     ASSERT_TRUE(test == s.route_);
