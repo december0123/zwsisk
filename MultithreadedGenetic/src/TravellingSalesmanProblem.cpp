@@ -98,7 +98,7 @@ Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
         population = std::move(nextGen);
     }
     Route best{getFittest(population)};
-    return {calcCostOfRoute(population.front()), population.front()};
+    return {calcCostOfRoute(best), best};
 }
 
 std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
