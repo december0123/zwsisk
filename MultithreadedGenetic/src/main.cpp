@@ -14,7 +14,7 @@ using ProjectUtilities::measureGeneticQuality;
 int main(int argc, char **argv)
 {
     constexpr unsigned NUM_OF_TESTS = 50;
-    constexpr unsigned NUM_OF_CITIES = 10;
+    constexpr unsigned NUM_OF_CITIES = 5;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 500;
     std::cout << "Genetyczny dla " + std::to_string(NUM_OF_CITIES) + " miast: "

@@ -95,10 +95,6 @@ Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
             }
             nextGen[j] = std::move(offspring);
         }
-        std::sort(nextGen.begin(), nextGen.end(),
-                [this](const Route& lhs, const Route& rhs) {
-                    return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
-        });
         population = std::move(nextGen);
     }
     Route best{getFittest(population)};
@@ -122,7 +118,7 @@ std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
 Route TravellingSalesmanProblem::pickParent(const Population& population) const
 {
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
-    std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
+    std::uniform_int_distribution<unsigned> distr(0, population.size() - 1);
     Population potentialParents(alphaSize);
     for (auto i = 0U; i < alphaSize; ++i)
     {
