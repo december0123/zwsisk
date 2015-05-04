@@ -55,9 +55,13 @@ template<typename T>
 long double measureAverageRelativeError(const int numOfTests, const std::function<T()>& f,
         const std::function<T()>& f2)
 {
-    const unsigned numOfThreads = std::thread::hardware_concurrency();
+    unsigned numOfThreads = std::thread::hardware_concurrency();
+    while(numOfTests % numOfThreads)
+    {
+        --numOfThreads;
+    }
 
-    std::atomic<unsigned> sumOfGenCosts { 0 };
+    std::atomic<unsigned> sumOfGenCosts { 0U };
     auto mGen = [&]()
     {
         for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
@@ -80,7 +84,6 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
     }
 
     long double genCost { static_cast<long double>(sumOfGenCosts.load()) / numOfTests };
-
     return std::abs((bf - genCost) / genCost);
 }
 
