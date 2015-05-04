@@ -9,7 +9,7 @@ using namespace ProjectUtilities;
 int main(int argc, char **argv)
 {
     constexpr unsigned NUM_OF_TESTS = 10;
-    constexpr unsigned NUM_OF_CITIES = 2;
+    constexpr unsigned NUM_OF_CITIES = 3;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 3;
     constexpr unsigned POPULATION_SIZE = 100;
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     constexpr unsigned NUM_OF_GENERATIONS = 100;
     const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
 
-//    tsp.printGraph();
+    tsp.printGraph();
 //
 //    std::cout << "Genetyczny dla " + std::to_string(NUM_OF_CITIES) + " miast: "
 //            << measureAverageGeneticTime(NUM_OF_TESTS, tsp, POPULATION_SIZE, MUTATION_PROBABILITY,
@@ -37,6 +37,6 @@ int main(int argc, char **argv)
 //    std::cout << "\nBrute\n" << s.cost_ << std::endl;
 //
 //    printContainer(s.route_);
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+//    ::testing::InitGoogleTest(&argc, argv);
+//    return RUN_ALL_TESTS();
 }

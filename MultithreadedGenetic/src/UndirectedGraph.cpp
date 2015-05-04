@@ -12,18 +12,20 @@ UndirectedGraph::UndirectedGraph(const unsigned numOfVertices)
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned minCost,
         const unsigned maxCost)
-        : numOfVertices_ { numOfVertices }, matrix_ { numOfVertices }
+        : numOfVertices_ { numOfVertices },
+          matrix_{numOfVertices, std::vector<unsigned>(numOfVertices, 0 )}
 {
     std::uniform_int_distribution<unsigned> distr { minCost, maxCost };
     std::mt19937_64 randomGen(std::random_device { }());
     unsigned weight;
-    for (auto& i : matrix_)
+    for (auto i = 0U; i < numOfVertices; ++i)
     {
-        for (int j = 0; j < numOfVertices; ++j)
+        for (int j = i + 1; j < numOfVertices; ++j)
         {
             weight = distr(randomGen);
             sumOfWeights_ += weight;
-            i.emplace_back(weight);
+            matrix_[i][j] = weight;
+            matrix_[j][i] = weight;
         }
     }
 }
