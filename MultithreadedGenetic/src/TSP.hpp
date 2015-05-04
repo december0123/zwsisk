@@ -47,7 +47,6 @@ private:
 
     unsigned calcCostOfRoute(const Route& route) const;
 
-    Route generatePrimitiveRoute() const;
     Population generateInitPopulation(const unsigned populationSize) const;
     Route pickParent(const Population& population) const;
     Route createOffspring(Route parent_a, Route parent_b) const;

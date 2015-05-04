@@ -39,7 +39,8 @@ Solution TSP::bruteForce() const
 {
     unsigned shortestDistance = std::numeric_limits<unsigned>::max();
     Route bestRoute;
-    Route route { generatePrimitiveRoute() };
+    Route route(numOfCities_);
+    std::iota(route.begin(), route.end(), 0);
 
     unsigned currentDistance = 0U;
     do
@@ -65,13 +66,6 @@ unsigned TSP::calcCostOfRoute(const Route& route) const
     }
     cost += graph_.getWeightOfEdge(route.front(), route.back());
     return cost;
-}
-
-Route TSP::generatePrimitiveRoute() const
-{
-    Route route(numOfCities_);
-    std::iota(route.begin(), route.end(), 0);
-    return route;
 }
 
 Solution TSP::genetic(const unsigned populationSize,
@@ -105,7 +99,8 @@ std::vector<Route> TSP::generateInitPopulation(
         const unsigned populationSize) const
 {
     Population population(populationSize);
-    Route route { std::move(generatePrimitiveRoute()) };
+    Route route(numOfCities_);
+    std::iota(route.begin(), route.end(), 0);
 
     for (unsigned i = 0; i < populationSize; ++i)
     {

@@ -190,9 +190,10 @@ TEST_F(UndirectedGraphFixture, canBeConstructedAsARandomInstanceAndPrintsNicely)
     ss.clear();
     const std::string vertex = "         \[" + std::to_string(MIN_COST) +
             "-" + std::to_string(MAX_COST) +"]";
-    ss << vertex + vertex + vertex + "\n";
-    ss << vertex + vertex + vertex + "\n";
-    ss << vertex + vertex + vertex + "\n";
+    const std::string zero = "         0";
+    ss << zero + vertex + vertex + "\n";
+    ss << vertex + zero + vertex + "\n";
+    ss << vertex + vertex + zero + "\n";
     std::regex pattern{ss.str()};
     ASSERT_TRUE(std::regex_match (graphPrint, pattern));
     ASSERT_TRUE(g_.getSumOfWeights() >= NUM_OF_VERTICES * MIN_COST);
