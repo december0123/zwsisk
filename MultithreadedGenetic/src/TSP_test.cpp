@@ -1,4 +1,4 @@
-#include "TravellingSalesmanProblem.hpp"
+#include "TSP.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -16,10 +16,10 @@ protected:
     void SetUp()
     {
         const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph.txt"};
-        tsp_ = std::make_unique<TravellingSalesmanProblem>(filePath);
+        tsp_ = std::make_unique<TSP>(filePath);
     }
 
-    std::unique_ptr<TravellingSalesmanProblem> tsp_;
+    std::unique_ptr<TSP> tsp_;
 };
 
 TEST_F(TravellingSalesmanProblemFixture, canBeCreatedFromFile)

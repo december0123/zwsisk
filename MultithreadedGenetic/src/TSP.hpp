@@ -1,8 +1,9 @@
-#ifndef TRAVELLINGSALESMANPROBLEM_HPP_
-#define TRAVELLINGSALESMANPROBLEM_HPP_
+#ifndef TSP_HPP_
+#define TSP_HPP_
 
 #include "UndirectedGraph.hpp"
 
+#include <iostream>
 #include <random>
 #include <string>
 #include <vector>
@@ -17,16 +18,16 @@ struct Solution
     Route route_;
 };
 
-class TravellingSalesmanProblem
+class TSP
 {
 public:
-    TravellingSalesmanProblem() = delete;
-    TravellingSalesmanProblem(const unsigned numOfCities);
-    TravellingSalesmanProblem(const unsigned numOfCities, const unsigned minCost,
+    TSP() = delete;
+    TSP(const unsigned numOfCities);
+    TSP(const unsigned numOfCities, const unsigned minCost,
             const unsigned maxCost);
-    TravellingSalesmanProblem(std::string pathToFile);
-    TravellingSalesmanProblem(TravellingSalesmanProblem&&) = default;
-    ~TravellingSalesmanProblem() = default;
+    TSP(std::string pathToFile);
+    TSP(TSP&&) = default;
+    ~TSP() = default;
 
     unsigned getSumOfCosts() const;
     unsigned getNumOfCities() const;
@@ -35,6 +36,8 @@ public:
     Solution bruteForce() const;
     Solution genetic(const unsigned populationSize, const long double mutationRate,
             const unsigned numOfGenerations) const;
+
+    void printGraph() const;
 
 private:
     Graph graph_;
@@ -53,4 +56,4 @@ private:
     Route getFittest(const Population& population) const;
 };
 
-#endif /* TRAVELLINGSALESMANPROBLEM_HPP_ */
+#endif /* TSP_HPP_ */

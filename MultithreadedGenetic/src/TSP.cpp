@@ -1,41 +1,41 @@
-#include "TravellingSalesmanProblem.hpp"
+#include "TSP.hpp"
 
 #include <algorithm>
 #include <random>
 #include <utility>
 
-TravellingSalesmanProblem::TravellingSalesmanProblem(const unsigned numOfCities)
+TSP::TSP(const unsigned numOfCities)
         : graph_(numOfCities), numOfCities_(numOfCities), sumOfCosts_(graph_.getSumOfWeights())
 {}
 
-TravellingSalesmanProblem::TravellingSalesmanProblem(const unsigned numOfCities,
+TSP::TSP(const unsigned numOfCities,
         const unsigned minCost, const unsigned maxCost)
         : graph_ { numOfCities, minCost, maxCost }, numOfCities_(numOfCities),
           sumOfCosts_(graph_.getSumOfWeights())
 {}
 
-TravellingSalesmanProblem::TravellingSalesmanProblem(std::string pathToFile)
+TSP::TSP(std::string pathToFile)
         : graph_(pathToFile), numOfCities_(graph_.getNumberOfVertices()),
           sumOfCosts_(graph_.getSumOfWeights())
 {}
 
-unsigned TravellingSalesmanProblem::getSumOfCosts() const
+unsigned TSP::getSumOfCosts() const
 {
     return sumOfCosts_;
 }
 
-unsigned TravellingSalesmanProblem::getNumOfCities() const
+unsigned TSP::getNumOfCities() const
 {
     return numOfCities_;
 }
 
-unsigned TravellingSalesmanProblem::getCostBetweenCities(const unsigned from,
+unsigned TSP::getCostBetweenCities(const unsigned from,
         const unsigned to) const
 {
     return graph_.getWeightOfEdge(from, to);
 }
 
-Solution TravellingSalesmanProblem::bruteForce() const
+Solution TSP::bruteForce() const
 {
     unsigned shortestDistance = std::numeric_limits<unsigned>::max();
     Route bestRoute;
@@ -56,7 +56,7 @@ Solution TravellingSalesmanProblem::bruteForce() const
     return {shortestDistance, bestRoute};
 }
 
-unsigned TravellingSalesmanProblem::calcCostOfRoute(const Route& route) const
+unsigned TSP::calcCostOfRoute(const Route& route) const
 {
     unsigned cost = 0U;
     for (unsigned i = 0; i < route.size() - 1; ++i)
@@ -67,14 +67,14 @@ unsigned TravellingSalesmanProblem::calcCostOfRoute(const Route& route) const
     return cost;
 }
 
-Route TravellingSalesmanProblem::generatePrimitiveRoute() const
+Route TSP::generatePrimitiveRoute() const
 {
     Route route(numOfCities_);
     std::iota(route.begin(), route.end(), 0);
     return route;
 }
 
-Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
+Solution TSP::genetic(const unsigned populationSize,
         const long double mutationProbability, const unsigned numOfGenerations) const
 {
     Population population { std::move(generateInitPopulation(populationSize)) };
@@ -101,7 +101,7 @@ Solution TravellingSalesmanProblem::genetic(const unsigned populationSize,
     return {calcCostOfRoute(best), best};
 }
 
-std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
+std::vector<Route> TSP::generateInitPopulation(
         const unsigned populationSize) const
 {
     Population population(populationSize);
@@ -115,7 +115,7 @@ std::vector<Route> TravellingSalesmanProblem::generateInitPopulation(
     return population;
 }
 
-Route TravellingSalesmanProblem::pickParent(const Population& population) const
+Route TSP::pickParent(const Population& population) const
 {
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
     std::uniform_int_distribution<unsigned> distr(0, population.size() - 1);
@@ -127,7 +127,7 @@ Route TravellingSalesmanProblem::pickParent(const Population& population) const
     return getFittest(std::move(potentialParents));
 }
 
-Route TravellingSalesmanProblem::createOffspring(Route parent_a, Route parent_b) const
+Route TSP::createOffspring(Route parent_a, Route parent_b) const
 {
     std::uniform_int_distribution<unsigned> distr(0, parent_a.size() - 1);
     Route offspring(parent_a.size(), -1);
@@ -158,21 +158,26 @@ Route TravellingSalesmanProblem::createOffspring(Route parent_a, Route parent_b)
     return offspring;
 }
 
-void TravellingSalesmanProblem::mutate(Route& route) const
+void TSP::mutate(Route& route) const
 {
     std::uniform_int_distribution<unsigned> distr(0, route.size() - 1);
     std::swap(route[distr(randomGen_)], route[distr(randomGen_)]);
 }
 
-bool TravellingSalesmanProblem::routeContainsCity(const Route& route, const unsigned city) const
+bool TSP::routeContainsCity(const Route& route, const unsigned city) const
 {
     return std::find(route.begin(), route.end(), city) != route.end();
 }
 
-Route TravellingSalesmanProblem::getFittest(const Population& population) const
+Route TSP::getFittest(const Population& population) const
 {
     return *std::max_element(population.begin(), population.end(),
             [this](const Route& lhs, const Route& rhs) {
                 return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
     });
+}
+
+void TSP::printGraph() const
+{
+    std::cout << graph_ << std::endl;
 }
