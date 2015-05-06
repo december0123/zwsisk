@@ -8,14 +8,17 @@ using namespace ProjectUtilities;
 
 int main(int argc, char **argv)
 {
-    constexpr unsigned NUM_OF_TESTS = 10;
-    constexpr unsigned NUM_OF_CITIES = 6;
+    constexpr unsigned NUM_OF_TESTS = 100;
+    constexpr unsigned NUM_OF_CITIES = 9;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 50;
     constexpr unsigned POPULATION_SIZE = 100;
     constexpr long double MUTATION_PROBABILITY = 0.01;
-    constexpr unsigned NUM_OF_GENERATIONS = 50;
+    constexpr unsigned NUM_OF_GENERATIONS = 150;
     const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
+//    Route r1{1, 0, 2, 3};
+//    Route r2{2, 3, 0, 1};
+//    printContainer(tsp.createOffspring(r1, r2));
 
     std::cout << "Genetyczny dla " + std::to_string(NUM_OF_CITIES) + " miast: "
             << measureAverageGeneticTime(NUM_OF_TESTS, tsp, POPULATION_SIZE, MUTATION_PROBABILITY,

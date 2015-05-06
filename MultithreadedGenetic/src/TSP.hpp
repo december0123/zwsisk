@@ -6,10 +6,12 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <utility>
 #include <vector>
 
 using Graph = UndirectedGraph;
 using Route = std::vector<unsigned>;
+using Parents = std::pair<Route, Route>;
 using Population = std::vector<Route>;
 
 struct Solution
@@ -38,6 +40,7 @@ public:
             const unsigned numOfGenerations) const;
 
     void printGraph() const;
+    Route createOffspring(Route parent_a, Route parent_b) const;
 
 private:
     Graph graph_;
@@ -48,8 +51,8 @@ private:
     unsigned calcCostOfRoute(const Route& route) const;
 
     Population generateInitPopulation(const unsigned populationSize) const;
-    Route pickParent(const Population& population) const;
-    Route createOffspring(Route parent_a, Route parent_b) const;
+    Parents pickParents(Population& population) const;
+
     void mutate(Route& route) const;
     bool routeContainsCity(const Route& route, const unsigned city) const;
     Route getFittest(const Population& population) const;

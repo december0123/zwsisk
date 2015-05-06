@@ -80,8 +80,9 @@ Solution TSP::genetic(const unsigned populationSize,
         nextGen[0] = getFittest(population);
         for (auto j = 1U; j < populationSize; ++j)
         {
-            Route parent_a{std::move(pickParent(population))};
-            Route parent_b{std::move(pickParent(population))};
+            Parents p = pickParents(population);
+            Route parent_a{std::move(p.first)};
+            Route parent_b{std::move(p.second)};
             Route offspring{createOffspring(std::move(parent_a), std::move(parent_b))};
             if (distr(randomGen_) <= mutationProbability)
             {
@@ -110,29 +111,37 @@ std::vector<Route> TSP::generateInitPopulation(
     return population;
 }
 
-Route TSP::pickParent(const Population& population) const
+Parents TSP::pickParents(Population& population) const
 {
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
-    std::uniform_int_distribution<unsigned> distr(0, population.size() - 1);
-    Population potentialParents(alphaSize);
-    for (auto i = 0U; i < alphaSize; ++i)
+    std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
+    auto cmp = [this](const Route& lhs, const Route& rhs) {
+        return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
+    };
+    std::partial_sort(population.begin(), population.begin() + alphaSize, population.end(), cmp);
+    unsigned a = distr(randomGen_);
+    unsigned b = distr(randomGen_);
+    while(a == b)
     {
-        potentialParents[i] = population[distr(randomGen_)];
+        b = distr(randomGen_);
     }
-    return getFittest(std::move(potentialParents));
+    Route parent_a = population[a];
+    Route parent_b = population[b];
+    return std::make_pair(parent_a, parent_b);
 }
 
 Route TSP::createOffspring(Route parent_a, Route parent_b) const
 {
     std::uniform_int_distribution<unsigned> distr(0, parent_a.size() - 1);
     Route offspring(parent_a.size(), -1);
+
     const unsigned pivot_a = distr(randomGen_);
-    unsigned pivot_b = 0U;
-    do
+    unsigned pivot_b = distr(randomGen_);
+    while (pivot_b < pivot_a)
     {
         pivot_b = distr(randomGen_);
     }
-    while (pivot_b < pivot_a);
+
 
     for (auto i = pivot_a; i <= pivot_b; ++i)
     {
@@ -168,7 +177,7 @@ Route TSP::getFittest(const Population& population) const
 {
     return *std::max_element(population.begin(), population.end(),
             [this](const Route& lhs, const Route& rhs) {
-                return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
+                return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
     });
 }
 
