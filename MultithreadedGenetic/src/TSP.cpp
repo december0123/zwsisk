@@ -111,7 +111,7 @@ Population TSP::generateInitPopulation(
 
 Parents TSP::pickParents(Population& population) const
 {
-    const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
+    const unsigned alphaSize = population.size() * 0.5;
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
     auto cmp = [this](const Route& lhs, const Route& rhs) {
         return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
