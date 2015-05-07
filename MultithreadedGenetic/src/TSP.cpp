@@ -81,9 +81,7 @@ Solution TSP::genetic(const unsigned populationSize,
         for (auto j = 1U; j < populationSize; ++j)
         {
             Parents p = pickParents(population);
-            Route parent_a{std::move(p.first)};
-            Route parent_b{std::move(p.second)};
-            Route offspring{createOffspring(std::move(parent_a), std::move(parent_b))};
+            Route offspring{createOffspring(std::move(p.first), std::move(p.second))};
             if (distr(randomGen_) <= mutationProbability)
             {
                 mutate(offspring);
@@ -93,7 +91,7 @@ Solution TSP::genetic(const unsigned populationSize,
         population = std::move(nextGen);
     }
     Route best{getFittest(population)};
-    return {calcCostOfRoute(best), best};
+    return {calcCostOfRoute(best), std::move(best)};
 }
 
 Population TSP::generateInitPopulation(
@@ -116,7 +114,7 @@ Parents TSP::pickParents(Population& population) const
     const unsigned alphaSize = population.size() > 5 ? 5 : population.size();
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
     auto cmp = [this](const Route& lhs, const Route& rhs) {
-        return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
+        return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
     };
     std::partial_sort(population.begin(), population.begin() + alphaSize, population.end(), cmp);
     unsigned parent_a = distr(randomGen_);
