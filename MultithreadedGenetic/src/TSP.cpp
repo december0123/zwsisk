@@ -96,7 +96,7 @@ Solution TSP::genetic(const unsigned populationSize,
     return {calcCostOfRoute(best), best};
 }
 
-std::vector<Route> TSP::generateInitPopulation(
+Population TSP::generateInitPopulation(
         const unsigned populationSize) const
 {
     Population population(populationSize);
@@ -119,15 +119,14 @@ Parents TSP::pickParents(Population& population) const
         return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
     };
     std::partial_sort(population.begin(), population.begin() + alphaSize, population.end(), cmp);
-    unsigned a = distr(randomGen_);
-    unsigned b = distr(randomGen_);
-    while(a == b)
+    unsigned parent_a = distr(randomGen_);
+    unsigned parent_b = distr(randomGen_);
+    while(parent_a == parent_b)
     {
-        b = distr(randomGen_);
+        parent_b = distr(randomGen_);
     }
-    Route parent_a = population[a];
-    Route parent_b = population[b];
-    return std::make_pair(parent_a, parent_b);
+
+    return std::make_pair(population[parent_a], population[parent_b]);
 }
 
 Route TSP::createOffspring(Route parent_a, Route parent_b) const
@@ -141,7 +140,6 @@ Route TSP::createOffspring(Route parent_a, Route parent_b) const
     {
         pivot_b = distr(randomGen_);
     }
-
 
     for (auto i = pivot_a; i <= pivot_b; ++i)
     {
