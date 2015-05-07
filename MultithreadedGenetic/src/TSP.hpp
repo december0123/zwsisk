@@ -43,9 +43,9 @@ public:
     Route createOffspring(Route parent_a, Route parent_b) const;
 
 private:
-    Graph graph_;
-    unsigned numOfCities_ = 0U;
-    unsigned sumOfCosts_ = 0U;
+    const Graph graph_;
+    const unsigned numOfCities_ = 0U;
+    const unsigned sumOfCosts_ = 0U;
     mutable std::mt19937_64 randomGen_{std::random_device{}()};
 
     unsigned calcCostOfRoute(const Route& route) const;
