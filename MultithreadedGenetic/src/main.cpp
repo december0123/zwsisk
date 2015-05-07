@@ -9,7 +9,7 @@ using namespace ProjectUtilities;
 int main(int argc, char **argv)
 {
     constexpr unsigned NUM_OF_TESTS = 100;
-    constexpr unsigned NUM_OF_CITIES = 2;
+    constexpr unsigned NUM_OF_CITIES = 10;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 50;
     constexpr unsigned POPULATION_SIZE = 50;

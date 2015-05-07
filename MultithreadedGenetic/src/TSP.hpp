@@ -51,7 +51,7 @@ private:
     unsigned calcCostOfRoute(const Route& route) const;
 
     Population generateInitPopulation(const unsigned populationSize) const;
-    Parents pickParents(Population& population) const;
+    Parents pickParents(const Population& population) const;
 
     void mutate(Route& route) const;
     bool routeContainsCity(const Route& route, const unsigned city) const;

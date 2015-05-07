@@ -8,8 +8,7 @@ TSP::TSP(const unsigned numOfCities)
         : graph_(numOfCities), numOfCities_(numOfCities), sumOfCosts_(graph_.getSumOfWeights())
 {}
 
-TSP::TSP(const unsigned numOfCities,
-        const unsigned minCost, const unsigned maxCost)
+TSP::TSP(const unsigned numOfCities, const unsigned minCost, const unsigned maxCost)
         : graph_ { numOfCities, minCost, maxCost }, numOfCities_(numOfCities),
           sumOfCosts_(graph_.getSumOfWeights())
 {}
@@ -29,8 +28,7 @@ unsigned TSP::getNumOfCities() const
     return numOfCities_;
 }
 
-unsigned TSP::getCostBetweenCities(const unsigned from,
-        const unsigned to) const
+unsigned TSP::getCostBetweenCities(const unsigned from, const unsigned to) const
 {
     return graph_.getWeightOfEdge(from, to);
 }
@@ -68,34 +66,36 @@ unsigned TSP::calcCostOfRoute(const Route& route) const
     return cost;
 }
 
-Solution TSP::genetic(const unsigned populationSize,
-        const long double mutationProbability, const unsigned numOfGenerations) const
+Solution TSP::genetic(const unsigned populationSize, const long double mutationProbability,
+        const unsigned numOfGenerations) const
 {
     Population population { std::move(generateInitPopulation(populationSize)) };
     std::uniform_real_distribution<long double> distr(0, 1);
 
     for (auto i = 0U; i < numOfGenerations; ++i)
     {
-        Population nextGen(populationSize);
-        nextGen[0] = getFittest(population);
-        for (auto j = 1U; j < populationSize; ++j)
+        std::partial_sort(population.begin(), population.begin() + populationSize / 2,
+                population.end(), [this](const Route& lhs, const Route& rhs)
+                {
+                    return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
+                });
+
+        for (auto j = populationSize / 2; j < populationSize; ++j)
         {
             Parents p = pickParents(population);
-            Route offspring{createOffspring(std::move(p.first), std::move(p.second))};
+            Route offspring { createOffspring(std::move(p.first), std::move(p.second)) };
             if (distr(randomGen_) <= mutationProbability)
             {
                 mutate(offspring);
             }
-            nextGen[j] = std::move(offspring);
+            population[j] = std::move(offspring);
         }
-        population = std::move(nextGen);
     }
-    Route best{getFittest(population)};
+    Route best { getFittest(population) };
     return {calcCostOfRoute(best), std::move(best)};
 }
 
-Population TSP::generateInitPopulation(
-        const unsigned populationSize) const
+Population TSP::generateInitPopulation(const unsigned populationSize) const
 {
     Population population(populationSize);
     Route route(numOfCities_);
@@ -109,17 +109,14 @@ Population TSP::generateInitPopulation(
     return population;
 }
 
-Parents TSP::pickParents(Population& population) const
+Parents TSP::pickParents(const Population& population) const
 {
     const unsigned alphaSize = population.size() * 0.5;
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
-    auto cmp = [this](const Route& lhs, const Route& rhs) {
-        return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
-    };
-    std::partial_sort(population.begin(), population.begin() + alphaSize, population.end(), cmp);
+
     unsigned parent_a = distr(randomGen_);
     unsigned parent_b = distr(randomGen_);
-    while(parent_a == parent_b)
+    while (parent_a == parent_b)
     {
         parent_b = distr(randomGen_);
     }
@@ -148,7 +145,7 @@ Route TSP::createOffspring(Route parent_a, Route parent_b) const
         if ((i < pivot_a) || (i > pivot_b))
         {
             unsigned j = 0;
-            while(routeContainsCity(offspring, parent_b[j]))
+            while (routeContainsCity(offspring, parent_b[j]))
             {
                 ++j;
             }
@@ -172,9 +169,10 @@ bool TSP::routeContainsCity(const Route& route, const unsigned city) const
 Route TSP::getFittest(const Population& population) const
 {
     return *std::max_element(population.begin(), population.end(),
-            [this](const Route& lhs, const Route& rhs) {
+            [this](const Route& lhs, const Route& rhs)
+            {
                 return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
-    });
+            });
 }
 
 void TSP::printGraph() const
