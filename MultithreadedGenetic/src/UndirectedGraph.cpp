@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -51,7 +52,6 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
             }
         }
         while ("EDGE_WEIGHT_SECTION" != line);
-
         unsigned weight = 0;
         for (unsigned row = 0; row < numOfVertices_; ++row)
         {
