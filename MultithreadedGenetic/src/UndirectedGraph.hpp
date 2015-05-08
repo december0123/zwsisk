@@ -37,6 +37,7 @@ public:
 private:
     UndirectedGraph() = default;
     void swap(UndirectedGraph& rhs);
+    std::string goToLineContaining(const std::string phrase, std::ifstream& file);
 
     unsigned numOfVertices_ = 0U;
     unsigned numOfEdges_ = 0U;

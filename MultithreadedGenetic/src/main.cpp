@@ -9,20 +9,21 @@ using namespace ProjectUtilities;
 int main(int argc, char **argv)
 {
     constexpr unsigned NUM_OF_TESTS = 100;
-    constexpr unsigned NUM_OF_CITIES = 100;
+    constexpr unsigned NUM_OF_CITIES = 9;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 50;
-    constexpr unsigned POPULATION_SIZE = 500;
+    constexpr unsigned POPULATION_SIZE = 200;
     constexpr long double MUTATION_PROBABILITY = 0.01;
-    constexpr unsigned NUM_OF_GENERATIONS = 500;
+    constexpr unsigned NUM_OF_GENERATIONS = 200;
 //    const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
-    const TSP tsp("/home/dec/studia/sem6/zwsisk/swiss42.tsp");
-//    Route r1{1, 0, 2, 3};
-//    Route r2{2, 3, 0, 1};
-//    printContainer(tsp.createOffspring(r1, r2));
-    Solution s = tsp.genetic(POPULATION_SIZE, MUTATION_PROBABILITY, NUM_OF_GENERATIONS);
-    std::cout << "Koszt: " << s.cost_ << std::endl;
-    printContainer(s.route_);
+    const TSP tsp("/home/dec/studia/sem6/zwsisk/graph.txt");
+////    std::cout << "Zakonczylem wczytywanie " << tsp.getNumOfCities() << " miast" << std::endl;
+//    Solution s = tsp.genetic(POPULATION_SIZE, MUTATION_PROBABILITY, NUM_OF_GENERATIONS);
+////    Solution s = tsp.bruteForce();
+//    std::cout << "Koszt: " << s.cost_ << std::endl;
+//
+//    printContainer(s.route_);
+    tsp.printGraph();
 
 //    std::cout << "Genetyczny dla " + std::to_string(NUM_OF_CITIES) + " miast: "
 //            << measureAverageGeneticTime(NUM_OF_TESTS, tsp, POPULATION_SIZE, MUTATION_PROBABILITY,

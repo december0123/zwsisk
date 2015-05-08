@@ -8,13 +8,15 @@
 #include <string>
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices)
-        : numOfVertices_ { numOfVertices },
-          matrix_{numOfVertices, std::vector<unsigned>(numOfVertices, 0 )} {}
+        : numOfVertices_ { numOfVertices }, matrix_ { numOfVertices, std::vector<unsigned>(
+                numOfVertices, 0) }
+{
+}
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned minCost,
         const unsigned maxCost)
-        : numOfVertices_ { numOfVertices },
-          matrix_{numOfVertices, std::vector<unsigned>(numOfVertices, 0 )}
+        : numOfVertices_ { numOfVertices }, matrix_ { numOfVertices, std::vector<unsigned>(
+                numOfVertices, 0) }
 {
     std::uniform_int_distribution<unsigned> distr { minCost, maxCost };
     std::mt19937_64 randomGen(std::random_device { }());
@@ -51,39 +53,46 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
                 matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
             }
         }
-        while ("EDGE_WEIGHT_SECTION" != line);
-        unsigned weight = 0;
-        for (unsigned row = 0; row < numOfVertices_; ++row)
+        while (line.find("EDGE_WEIGHT_FORMAT") == -1);
+        std::string matrixType = line.substr(line.find(':') + 2);
+        do
         {
-            for (unsigned column = 0; column < numOfVertices_; ++column)
+            std::getline(file, line);
+        }
+        while("EDGE_WEIGHT_SECTION" != line);
+        std::cout << "Liczba miast: " << numOfVertices_ << std::endl
+                << "Typ: " << matrixType << std::endl;
+        unsigned weight = 0;
+        if (matrixType == "FULL_MATRIX" || matrixType == "LOWER_DIAG_ROW")
+        {
+            for (auto row = 0U; row < numOfVertices_; ++row)
             {
-                if (!(file >> weight))
+                for (auto column = 0U; column <= row; ++column)
                 {
-                    throw std::runtime_error { " * Malformed file * " };
-                }
-                if (weight)
-                {
-                    try
+                    if (!(file >> weight))
+                    {
+                        throw std::runtime_error { " * Malformed file * " };
+                    }
+                    if (weight)
                     {
                         addEdge(row, column, weight);
                     }
-                    catch (const std::runtime_error& e)
-                    {
-                        // format pliku tego wymaga
-                    }
                 }
+                file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
         }
     }
 }
 
 UndirectedGraph::UndirectedGraph(const UndirectedGraph& rhs)
-    : numOfVertices_{rhs.numOfVertices_}, numOfEdges_{rhs.numOfEdges_},
-      sumOfWeights_{rhs.sumOfWeights_}, matrix_{rhs.matrix_} {}
+        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ }, sumOfWeights_ {
+                rhs.sumOfWeights_ }, matrix_ { rhs.matrix_ }
+{
+}
 
 UndirectedGraph::UndirectedGraph(UndirectedGraph&& rhs)
-    : numOfVertices_{rhs.numOfVertices_}, numOfEdges_{rhs.numOfEdges_},
-      sumOfWeights_{rhs.sumOfWeights_}, matrix_{std::move(rhs.matrix_)}
+        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ }, sumOfWeights_ {
+                rhs.sumOfWeights_ }, matrix_ { std::move(rhs.matrix_) }
 {
     rhs.numOfVertices_ = 0U;
     rhs.numOfEdges_ = 0U;
@@ -165,7 +174,8 @@ void UndirectedGraph::clear()
     numOfVertices_ = 0U;
     numOfEdges_ = 0U;
     sumOfWeights_ = 0U;
-    matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
+    matrix_ =
+    {   numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
 }
 
 void UndirectedGraph::swap(UndirectedGraph& rhs)

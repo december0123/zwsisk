@@ -111,7 +111,7 @@ Population TSP::generateInitPopulation(const unsigned populationSize) const
 
 Parents TSP::pickParents(const Population& population) const
 {
-    const unsigned alphaSize = population.size() * 0.5;
+    const unsigned alphaSize = population.size() > 4? population.size() / 2 : 3;
     std::uniform_int_distribution<unsigned> distr(0, alphaSize - 1);
 
     unsigned parent_a = distr(randomGen_);
