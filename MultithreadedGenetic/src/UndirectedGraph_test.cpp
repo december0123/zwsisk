@@ -158,9 +158,28 @@ TEST_F(UndirectedGraphFixture, canBeMoveAssigned)
     ASSERT_EQ(0, g_.getSumOfWeights());
 }
 
-TEST_F(UndirectedGraphFixture, canBeConstructedFromFile)
+TEST_F(UndirectedGraphFixture, canBeConstructedFromFile_fullMatrix)
 {
-    const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph.txt"};
+    const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph_full_matrix.txt"};
+    g_ = UndirectedGraph(filePath);
+    std::stringstream ss;
+    ss << g_;
+    const std::string graphPrint { ss.str() };
+    ss.str("");
+    ss.clear();
+    ss << "         0         1         1         8\n";
+    ss << "         1         0         4         1\n";
+    ss << "         1         4         0         1\n";
+    ss << "         8         1         1         0\n";
+    ASSERT_EQ(ss.str(), graphPrint);
+    ASSERT_EQ(6, g_.getNumberOfEdges());
+    ASSERT_EQ(4, g_.getNumberOfVertices());
+    ASSERT_EQ(16, g_.getSumOfWeights());
+}
+
+TEST_F(UndirectedGraphFixture, canBeConstructedFromFile_lower_triangular)
+{
+    const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph_lower.txt"};
     g_ = UndirectedGraph(filePath);
     std::stringstream ss;
     ss << g_;

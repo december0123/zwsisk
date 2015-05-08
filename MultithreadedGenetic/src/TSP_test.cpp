@@ -15,7 +15,7 @@ class TravellingSalesmanProblemFixture : public ::testing::Test
 protected:
     void SetUp()
     {
-        const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph.txt"};
+        const std::string filePath{"/home/dec/studia/sem6/zwsisk/graph_full_matrix.txt"};
         tsp_ = std::make_unique<TSP>(filePath);
     }
 

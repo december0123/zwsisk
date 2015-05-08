@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     constexpr long double MUTATION_PROBABILITY = 0.01;
     constexpr unsigned NUM_OF_GENERATIONS = 200;
 //    const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
-    const TSP tsp("/home/dec/studia/sem6/zwsisk/graph.txt");
+    const TSP tsp("/home/dec/studia/sem6/zwsisk/graph_full_matrix.txt");
 ////    std::cout << "Zakonczylem wczytywanie " << tsp.getNumOfCities() << " miast" << std::endl;
 //    Solution s = tsp.genetic(POPULATION_SIZE, MUTATION_PROBABILITY, NUM_OF_GENERATIONS);
 ////    Solution s = tsp.bruteForce();
