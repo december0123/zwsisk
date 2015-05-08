@@ -43,13 +43,12 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
     else
     {
         std::string line = goToLineContaining("DIMENSION", file);
-        std::string value = line.substr(line.find(':') + 1);
-        std::cout << value << std::endl;
-        numOfVertices_ = std::stoi(value);
+        numOfVertices_ = std::stoi(line.substr(line.find(':') + 1));
         matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
 
         line = goToLineContaining("EDGE_WEIGHT_FORMAT", file);
         std::string matrixType = line.substr(line.find(':') + 2);
+
         goToLineContaining("EDGE_WEIGHT_SECTION", file);
 
         unsigned weight = 0;
