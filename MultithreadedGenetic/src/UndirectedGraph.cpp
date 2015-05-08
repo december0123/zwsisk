@@ -1,22 +1,19 @@
 #include "UndirectedGraph.hpp"
 
 #include <fstream>
-#include <iomanip>
-#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices)
-        : numOfVertices_ { numOfVertices }, matrix_ { numOfVertices, std::vector<unsigned>(
-                numOfVertices, 0) }
-{
-}
+        : numOfVertices_ { numOfVertices },
+          matrix_ { numOfVertices, std::vector<unsigned>(numOfVertices, 0) }
+{}
 
 UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned minCost,
         const unsigned maxCost)
-        : numOfVertices_ { numOfVertices }, matrix_ { numOfVertices, std::vector<unsigned>(
-                numOfVertices, 0) }
+        : numOfVertices_ { numOfVertices },
+          matrix_ { numOfVertices, std::vector<unsigned>(numOfVertices, 0) }
 {
     std::uniform_int_distribution<unsigned> distr { minCost, maxCost };
     std::mt19937_64 randomGen(std::random_device { }());
@@ -89,14 +86,14 @@ std::string UndirectedGraph::goToLineContaining(std::string phrase, std::ifstrea
 }
 
 UndirectedGraph::UndirectedGraph(const UndirectedGraph& rhs)
-        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ }, sumOfWeights_ {
-                rhs.sumOfWeights_ }, matrix_ { rhs.matrix_ }
+        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ },
+          sumOfWeights_ {rhs.sumOfWeights_ }, matrix_ { rhs.matrix_ }
 {
 }
 
 UndirectedGraph::UndirectedGraph(UndirectedGraph&& rhs)
-        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ }, sumOfWeights_ {
-                rhs.sumOfWeights_ }, matrix_ { std::move(rhs.matrix_) }
+        : numOfVertices_ { rhs.numOfVertices_ }, numOfEdges_ { rhs.numOfEdges_ },
+          sumOfWeights_ {rhs.sumOfWeights_ }, matrix_ { std::move(rhs.matrix_) }
 {
     rhs.numOfVertices_ = 0U;
     rhs.numOfEdges_ = 0U;
@@ -178,8 +175,7 @@ void UndirectedGraph::clear()
     numOfVertices_ = 0U;
     numOfEdges_ = 0U;
     sumOfWeights_ = 0U;
-    matrix_ =
-    {   numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
+    matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
 }
 
 void UndirectedGraph::swap(UndirectedGraph& rhs)
@@ -191,15 +187,4 @@ void UndirectedGraph::swap(UndirectedGraph& rhs)
     swap(matrix_, rhs.matrix_);
 }
 
-std::ostream& operator<<(std::ostream& os, const UndirectedGraph& rhs)
-{
-    for (int i = 0; i < rhs.numOfVertices_; ++i)
-    {
-        for (int j = 0; j < rhs.numOfVertices_; ++j)
-        {
-            os << std::setw(10) << rhs.matrix_[i][j];
-        }
-        os << std::endl;
-    }
-    return os;
-}
+

@@ -1,7 +1,7 @@
 #ifndef UNDIRECTEDGRAPH_HPP_
 #define UNDIRECTEDGRAPH_HPP_
 
-#include <ostream>
+#include <iomanip>
 #include <vector>
 
 class UndirectedGraph
@@ -32,7 +32,19 @@ public:
     // Sets graph to default state as if UndirectedGraph(numOfVertices) was called
     void clear();
 
-    friend std::ostream& operator<<(std::ostream& os, const UndirectedGraph& rhs);
+    template<typename T>
+    friend T& operator<<(T& os, const UndirectedGraph& rhs)
+    {
+        for (int i = 0; i < rhs.numOfVertices_; ++i)
+        {
+            for (int j = 0; j < rhs.numOfVertices_; ++j)
+            {
+                os << std::setw(10) << rhs.matrix_[i][j];
+            }
+            os << std::endl;
+        }
+        return os;
+    }
 
 private:
     UndirectedGraph() = default;
