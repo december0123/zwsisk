@@ -53,7 +53,7 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
         {
             for (auto row = 0U; row < numOfVertices_; ++row)
             {
-                for (auto column = 0U; column <= row; ++column)
+                for (auto column = 0U; column < row; ++column)
                 {
                     if (!(file >> weight))
                     {
@@ -62,6 +62,10 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
                     if (weight)
                     {
                         addEdge(row, column, weight);
+                    }
+                    else
+                    {
+                        throw std::runtime_error { " * Malformed file - read 0 instead of a positive number * " };
                     }
                 }
                 file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
