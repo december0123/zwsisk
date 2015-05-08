@@ -7,6 +7,8 @@
 class UndirectedGraph
 {
 public:
+    UndirectedGraph() = default;
+
     // Creates a graph with numOfVertices vertices and no edges
     UndirectedGraph(const unsigned numOfVertices);
 
@@ -35,9 +37,9 @@ public:
     template<typename T>
     friend T& operator<<(T& os, const UndirectedGraph& rhs)
     {
-        for (int i = 0; i < rhs.numOfVertices_; ++i)
+        for (auto i = 0U; i < rhs.numOfVertices_; ++i)
         {
-            for (int j = 0; j < rhs.numOfVertices_; ++j)
+            for (auto j = 0U; j < rhs.numOfVertices_; ++j)
             {
                 os << std::setw(10) << rhs.matrix_[i][j];
             }
@@ -47,7 +49,6 @@ public:
     }
 
 private:
-    UndirectedGraph() = default;
     void swap(UndirectedGraph& rhs);
     std::string goToLineContaining(std::string phrase, std::ifstream& file);
 
