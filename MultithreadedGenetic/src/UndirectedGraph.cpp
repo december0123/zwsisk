@@ -33,17 +33,6 @@ UndirectedGraph::UndirectedGraph(const unsigned numOfVertices, const unsigned mi
     }
 }
 
-std::string UndirectedGraph::goToLineContaining(std::string phrase, std::ifstream& file)
-{
-    std::string line;
-    do
-    {
-        std::getline(file, line);
-    }
-    while (line.find(phrase) == -1);
-    return line;
-}
-
 UndirectedGraph::UndirectedGraph(std::string filePath)
 {
     std::ifstream file(filePath);
@@ -53,18 +42,13 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
     }
     else
     {
-        std::string line;
-        do
-        {
-            std::getline(file, line);
-            if (line.find("DIMENSION") == 0)
-            {
-                std::string value = line.substr(line.find(':') + 1);
-                numOfVertices_ = std::stoi(value);
-                matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
-            }
-        }
-        while (line.find("EDGE_WEIGHT_FORMAT") == -1);
+        std::string line = goToLineContaining("DIMENSION", file);
+        std::string value = line.substr(line.find(':') + 1);
+        std::cout << value << std::endl;
+        numOfVertices_ = std::stoi(value);
+        matrix_ = {numOfVertices_, std::vector<unsigned>(numOfVertices_, 0)};
+
+        line = goToLineContaining("EDGE_WEIGHT_FORMAT", file);
         std::string matrixType = line.substr(line.find(':') + 2);
         goToLineContaining("EDGE_WEIGHT_SECTION", file);
 
@@ -88,6 +72,17 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
             }
         }
     }
+}
+
+std::string UndirectedGraph::goToLineContaining(std::string phrase, std::ifstream& file)
+{
+    std::string line;
+    do
+    {
+        std::getline(file, line);
+    }
+    while (line.find(phrase) == -1);
+    return line;
 }
 
 UndirectedGraph::UndirectedGraph(const UndirectedGraph& rhs)
