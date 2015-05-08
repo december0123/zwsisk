@@ -70,6 +70,10 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
                 file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
         }
+        else
+        {
+            throw std::runtime_error {" * Wrong file format * "};
+        }
     }
 }
 
