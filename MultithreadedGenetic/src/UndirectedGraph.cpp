@@ -59,9 +59,8 @@ UndirectedGraph::UndirectedGraph(std::string filePath)
         {
             std::getline(file, line);
         }
-        while("EDGE_WEIGHT_SECTION" != line);
-        std::cout << "Liczba miast: " << numOfVertices_ << std::endl
-                << "Typ: " << matrixType << std::endl;
+        while(line.find("EDGE_WEIGHT_SECTION") == -1);
+
         unsigned weight = 0;
         if (matrixType == "FULL_MATRIX" || matrixType == "LOWER_DIAG_ROW")
         {

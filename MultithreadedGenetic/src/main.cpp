@@ -46,6 +46,6 @@ int main(int argc, char **argv)
 //    std::cout << "\nBrute\n" << s.cost_ << std::endl;
 //
 //    printContainer(s.route_);
-//    ::testing::InitGoogleTest(&argc, argv);
-//    return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
