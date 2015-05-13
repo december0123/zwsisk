@@ -38,7 +38,7 @@ TEST_F(TravellingSalesmanProblemFixture, findsOptimalPath_bruteForce)
 
 TEST_F(TravellingSalesmanProblemFixture, findsAPath_genetic)
 {
-    Solution s = tsp_->genetic(50, 0.5, 100);
+    Solution s = tsp_->genetic(10, 0.01, 10);
     ASSERT_TRUE(s.cost_);
     Route test(s.route_.size());
     std::iota(test.begin(), test.end(), 0);

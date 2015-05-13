@@ -166,6 +166,37 @@ bool TSP::routeContainsCity(const Route& route, const unsigned city) const
     return std::find(route.begin(), route.end(), city) != route.end();
 }
 
+Solution TSP::genetic_multi(const unsigned populationSize, const long double mutationProbability,
+        const unsigned numOfGenerations) const
+{
+    Population population { std::move(generateInitPopulation(populationSize)) };
+    std::uniform_real_distribution<long double> distr(0, 1);
+
+    auto witam = [&](auto begin, auto end) {
+        for (auto j = begin; j < end; ++j)
+        {
+            Parents p = pickParents(population);
+            Route offspring { createOffspring(std::move(p.first), std::move(p.second)) };
+            if (distr(randomGen_) <= mutationProbability)
+            {
+                mutate(offspring);
+            }
+            population[j] = std::move(offspring);
+        }
+    };
+    for (auto i = 0U; i < numOfGenerations; ++i)
+    {
+        std::partial_sort(population.begin(), population.begin() + populationSize / 2,
+                population.end(), [this](const Route& lhs, const Route& rhs)
+                {
+                    return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
+                });
+        witam(populationSize / 2, populationSize);
+    }
+    Route best { getFittest(population) };
+    return {calcCostOfRoute(best), std::move(best)};
+}
+
 Route TSP::getFittest(const Population& population) const
 {
     return *std::max_element(population.begin(), population.end(),

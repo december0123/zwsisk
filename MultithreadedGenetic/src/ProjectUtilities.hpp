@@ -48,7 +48,7 @@ long double measureAverageTime(const unsigned numOfTests, const std::function<C(
         times += std::chrono::duration<long double, T>(end - start).count();
     }
 
-    return times / static_cast<long double>(numOfTests);
+    return static_cast<long double>(times) / static_cast<long double>(numOfTests);
 }
 
 long double measureAverageGeneticTime(const unsigned numOfTests, const TSP& tsp,
@@ -75,13 +75,11 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
         --numOfThreads;
     }
 
-//    std::atomic<unsigned> sumOfGenCosts { 0U };
-    unsigned sumOfGenCosts = 0U;
+    std::atomic<unsigned> sumOfGenCosts { 0U };
     auto mGen = [&]()
     {
         for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
         {
-            std::lock_guard<std::mutex> l{m};
             sumOfGenCosts += gen().cost_;
         }
     };
@@ -99,7 +97,7 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
         t.join();
     }
 
-    long double genCost { static_cast<long double>(sumOfGenCosts)
+    long double genCost { static_cast<long double>(sumOfGenCosts.load())
             / static_cast<long double>(numOfTests) };
     return std::abs((bf - genCost) / genCost);
 }

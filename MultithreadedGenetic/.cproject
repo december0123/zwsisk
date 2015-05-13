@@ -27,8 +27,8 @@
 							<tool id="cdt.managedbuild.tool.llvm.cpp.compiler.base.1896081914" name="LLVM Clang++" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.base">
 								<option id="llvm.c_cpp.compiler.option.optimization.level.791186893" name="Optimization Level" superClass="llvm.c_cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="llvm.c_cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="llvm.c_cpp.compiler.option.debugging.level.174899710" name="Debug Level" superClass="llvm.c_cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="llvm.c_cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std.581890471" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags.1036214725" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags" value="-std=c++14" valueType="string"/>
+								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std.581890471" name="Language standard" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags.1036214725" name="Other dialect flags" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++14" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.llvm.cpp.compiler.input.370781808" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.llvm.c.linker.base.2051182860" name="LLVM Clang C linker" superClass="cdt.managedbuild.tool.llvm.c.linker.base">
@@ -91,6 +91,7 @@
 								<option id="llvm.c_cpp.compiler.option.debugging.level.1837894859" name="Debug Level" superClass="llvm.c_cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="llvm.c_cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std.587995793" name="Language standard" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags.573040520" name="Other dialect flags" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++14" valueType="string"/>
+								<option id="llvm.c_cpp.compiler.option.misc.other.1139348849" superClass="llvm.c_cpp.compiler.option.misc.other" value="-c -fmessage-length=0 -stdlib=libc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.llvm.cpp.compiler.input.356410467" superClass="cdt.managedbuild.tool.llvm.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.llvm.c.linker.base.1715556854" name="LLVM Clang C linker" superClass="cdt.managedbuild.tool.llvm.c.linker.base">
@@ -99,7 +100,7 @@
 							<tool id="cdt.managedbuild.tool.llvm.cpp.linker.base.847152859" name="LLVM Clang C++ linker" superClass="cdt.managedbuild.tool.llvm.cpp.linker.base">
 								<option defaultValue="false" id="llvm.c.link.option.nativeCBackEnd.297119174" name="Create native binary (with C backend code generator)" superClass="llvm.c.link.option.nativeCBackEnd" valueType="boolean"/>
 								<option id="llvm.c.link.option.libs.1281032249" name="Libraries (-l)" superClass="llvm.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="stdc++"/>
+									<listOptionValue builtIn="false" value="c++abi"/>
 									<listOptionValue builtIn="false" value="gmock"/>
 									<listOptionValue builtIn="false" value="gtest"/>
 									<listOptionValue builtIn="false" value="pthread"/>

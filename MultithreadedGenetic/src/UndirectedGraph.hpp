@@ -2,6 +2,7 @@
 #define UNDIRECTEDGRAPH_HPP_
 
 #include <iomanip>
+#include <iostream>
 #include <vector>
 
 class UndirectedGraph

@@ -3,7 +3,7 @@
 
 #include "UndirectedGraph.hpp"
 
-#include <iostream>
+#include <mutex>
 #include <random>
 #include <string>
 #include <utility>
@@ -36,7 +36,10 @@ public:
     unsigned getCostBetweenCities(const unsigned from, const unsigned to) const;
 
     Solution bruteForce() const;
-    Solution genetic(const unsigned populationSize, const long double mutationRate,
+    Solution genetic(const unsigned populationSize, const long double mutationProbability,
+            const unsigned numOfGenerations) const;
+
+    Solution genetic_multi(const unsigned populationSize, const long double mutationProbability,
             const unsigned numOfGenerations) const;
 
     void printGraph() const;
@@ -47,7 +50,7 @@ private:
     const unsigned numOfCities_ = 0U;
     const unsigned sumOfCosts_ = 0U;
     mutable std::mt19937_64 randomGen_{std::random_device{}()};
-
+    mutable std::mutex m_;
     unsigned calcCostOfRoute(const Route& route) const;
 
     Population generateInitPopulation(const unsigned populationSize) const;

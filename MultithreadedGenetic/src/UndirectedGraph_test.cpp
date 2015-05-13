@@ -220,7 +220,7 @@ TEST_F(UndirectedGraphFixture, canBeConstructedAsARandomInstanceAndPrintsNicely)
 
 TEST_F(UndirectedGraphFixture, throwsOnNonexistentFile)
 {
-    ASSERT_THROW(std::make_unique<UndirectedGraph>("/home/dec/studia/sem6/zwsisk/BRAKUJACY.txt"),
+    ASSERT_THROW(std::make_unique<UndirectedGraph>("/witam"),
             std::runtime_error);
 }
 
