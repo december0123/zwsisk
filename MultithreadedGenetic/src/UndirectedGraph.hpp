@@ -35,8 +35,7 @@ public:
     // Sets graph to default state as if UndirectedGraph(numOfVertices) was called
     void clear();
 
-    template<typename T>
-    friend T& operator<<(T& os, const UndirectedGraph& rhs)
+    friend std::ostream& operator<<(std::ostream& os, const UndirectedGraph& rhs)
     {
         for (auto i = 0U; i < rhs.numOfVertices_; ++i)
         {
