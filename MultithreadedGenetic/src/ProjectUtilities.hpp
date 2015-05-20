@@ -115,6 +115,15 @@ long double measureGeneticQuality(const unsigned numOfTests, const TSP& tsp,
                     numberOfGenerations));
 }
 
+long double measureGeneticQuality_multi(const unsigned numOfTests, const TSP& tsp,
+        const unsigned populationSize, const long double mutationProbability,
+        const unsigned numberOfGenerations)
+{
+    return measureAverageRelativeError<Solution>(numOfTests, std::bind(&TSP::bruteForce, &tsp),
+            std::bind(&TSP::genetic_multi, &tsp, populationSize, mutationProbability,
+                    numberOfGenerations));
+}
+
 }
 
 #endif /* PROJECTUTILITIES_HPP_ */
