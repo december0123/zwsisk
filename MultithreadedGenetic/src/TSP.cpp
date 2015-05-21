@@ -184,8 +184,8 @@ Solution TSP::genetic_multi(const unsigned populationSize, const long double mut
 
             for (auto j = populationSize / 2; j < populationSize; ++j)
             {
-                Parents p = pickParents(population);
-                Route offspring { createOffspring(std::move(p.first), std::move(p.second)) };
+                Parents p{pickParents(population)};
+                Route offspring { createOffspring(std::move(p.first), std::move(p.second))};
                 if (distr(randomGen_) <= mutationProbability)
                 {
                     mutate(offspring);
@@ -196,11 +196,18 @@ Solution TSP::genetic_multi(const unsigned populationSize, const long double mut
         Route best { getFittest(population) };
         return {calcCostOfRoute(best), std::move(best)};
     };
-    auto f1 = std::async(std::launch::async, gen);
-    auto f2 = std::async(std::launch::async, gen);
-    auto f3 = std::async(std::launch::async, gen);
-    auto f4 = std::async(std::launch::async, gen);
-    std::vector<Solution> solutions{f1.get(), f2.get(), f3.get(), f4.get()};
+
+    std::vector<std::future<Solution>> futures;
+    for (auto i = 0U; i < std::thread::hardware_concurrency(); ++i)
+    {
+        futures.emplace_back(std::async(std::launch::async, gen));
+    }
+
+    std::vector<Solution> solutions;
+    for (auto& f : futures)
+    {
+        solutions.emplace_back(f.get());
+    }
     return *std::min_element(solutions.begin(), solutions.end(),
             [](const Solution& lhs, const Solution& rhs){
                 return lhs.cost_ < rhs.cost_;

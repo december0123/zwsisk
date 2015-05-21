@@ -60,14 +60,23 @@ long double measureAverageGeneticTime(const unsigned numOfTests, const TSP& tsp,
                     numberOfGenerations));
 }
 
+long double measureAverageGeneticTime_multi(const unsigned numOfTests, const TSP& tsp,
+        const unsigned populationSize, const long double mutationProbability,
+        const unsigned numberOfGenerations)
+{
+    return measureAverageTime<Milli, Solution>(numOfTests,
+            std::bind(&TSP::genetic_multi, &tsp, populationSize, mutationProbability,
+                    numberOfGenerations));
+}
+
 long double measureAverageBruteForceTime(const unsigned numOfTests, const TSP& tsp)
 {
     return measureAverageTime<Milli, Solution>(numOfTests, std::bind(&TSP::bruteForce, &tsp));
 }
 
 template<typename T>
-long double measureAverageRelativeError(const int numOfTests, const std::function<T()>& brute,
-        const std::function<T()>& gen)
+long double measureAverageRelativeError(const int numOfTests, const std::function<T()>& f1,
+        const std::function<T()>& f2)
 {
     unsigned numOfThreads = std::thread::hardware_concurrency();
     while (numOfTests % numOfThreads)
@@ -80,7 +89,7 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
     {
         for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
         {
-            sumOfGenCosts += gen().cost_;
+            sumOfGenCosts += f2().cost_;
         }
     };
 
@@ -90,7 +99,7 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
         t = std::thread { mGen };
     }
 
-    const long double bf = brute().cost_;
+    const long double bf = f1().cost_;
 
     for (auto& t : threads)
     {
@@ -99,7 +108,46 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
 
     long double genCost { static_cast<long double>(sumOfGenCosts.load())
             / static_cast<long double>(numOfTests) };
-    return std::abs((bf - genCost) / genCost);
+    return bf - genCost;
+}
+
+template<typename T>
+long double measureAverageRelativeError_multi(const int numOfTests, const std::function<T()>& single,
+        const std::function<T()>& multi)
+{
+    unsigned numOfThreads = std::thread::hardware_concurrency();
+    while (numOfTests % numOfThreads)
+    {
+        --numOfThreads;
+    }
+
+    std::atomic<unsigned> sumOfGenCosts { 0U };
+    std::atomic<unsigned> sumOfGen_multiCosts { 0U };
+    auto mGen = [&]()
+    {
+        for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
+        {
+            sumOfGenCosts += single().cost_;
+            sumOfGen_multiCosts += multi().cost_;
+        }
+    };
+
+    std::vector<std::thread> threads(numOfThreads);
+    for (auto& t : threads)
+    {
+        t = std::thread { mGen };
+    }
+
+    for (auto& t : threads)
+    {
+        t.join();
+    }
+
+    long double genCost { static_cast<long double>(sumOfGenCosts.load())
+            / static_cast<long double>(numOfTests) };
+    long double gen_multiCost { static_cast<long double>(sumOfGen_multiCosts.load())
+            / static_cast<long double>(numOfTests) };
+    return (genCost - gen_multiCost) / genCost;
 }
 
 /*
@@ -119,7 +167,8 @@ long double measureGeneticQuality_multi(const unsigned numOfTests, const TSP& ts
         const unsigned populationSize, const long double mutationProbability,
         const unsigned numberOfGenerations)
 {
-    return measureAverageRelativeError<Solution>(numOfTests, std::bind(&TSP::bruteForce, &tsp),
+    return measureAverageRelativeError_multi<Solution>(numOfTests, std::bind(&TSP::genetic, &tsp,
+            populationSize, mutationProbability, numberOfGenerations),
             std::bind(&TSP::genetic_multi, &tsp, populationSize, mutationProbability,
                     numberOfGenerations));
 }
