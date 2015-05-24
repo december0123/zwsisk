@@ -81,7 +81,7 @@ Solution TSP::genetic_multi(const unsigned populationSize, const long double mut
     Population finalPopulation;
     for (auto& f : futures)
     {
-        finalPopulation.emplace_back(f.get().route_);
+        finalPopulation.emplace_back(std::move(f.get().route_));
     }
 
     return genetic(finalPopulation.size(), mutationProbability, numOfGenerations, finalPopulation);
