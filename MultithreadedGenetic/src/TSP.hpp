@@ -37,7 +37,7 @@ public:
 
     Solution bruteForce() const;
     Solution genetic(const unsigned populationSize, const long double mutationProbability,
-            const unsigned numOfGenerations) const;
+            const unsigned numOfGenerations, Population pop = Population(0)) const;
 
     Solution genetic_multi(const unsigned populationSize, const long double mutationProbability,
             const unsigned numOfGenerations) const;

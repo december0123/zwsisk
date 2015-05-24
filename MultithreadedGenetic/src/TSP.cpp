@@ -69,9 +69,17 @@ unsigned TSP::calcCostOfRoute(const Route& route) const
 }
 
 Solution TSP::genetic(const unsigned populationSize, const long double mutationProbability,
-        const unsigned numOfGenerations) const
+        const unsigned numOfGenerations, Population pop /*= Population(0)*/) const
 {
-    Population population { std::move(generateInitPopulation(populationSize)) };
+    Population population;
+    if (pop.empty())
+    {
+        population = std::move(generateInitPopulation(populationSize));
+    }
+    else
+    {
+        population = std::move(pop);
+    }
     std::uniform_real_distribution<long double> distr(0, 1);
 
     for (auto i = 0U; i < numOfGenerations; ++i)
@@ -94,7 +102,7 @@ Solution TSP::genetic(const unsigned populationSize, const long double mutationP
         }
     }
     Route best { getFittest(population) };
-    return {calcCostOfRoute(best), std::move(best)};
+    return {calcCostOfRoute(best), best};
 }
 
 Population TSP::generateInitPopulation(const unsigned populationSize) const
@@ -171,48 +179,20 @@ bool TSP::routeContainsCity(const Route& route, const unsigned city) const
 Solution TSP::genetic_multi(const unsigned populationSize, const long double mutationProbability,
         const unsigned numOfGenerations) const
 {
-    auto gen = [&]() -> Solution {
-        Population population { std::move(generateInitPopulation(populationSize)) };
-        std::uniform_real_distribution<long double> distr(0, 1);
-
-        for (auto i = 0U; i < numOfGenerations; ++i)
-        {
-            std::partial_sort(population.begin(), population.begin() + populationSize / 2,
-                    population.end(), [this](const Route& lhs, const Route& rhs)
-                    {
-                        return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
-                    });
-
-            for (auto j = populationSize / 2; j < populationSize; ++j)
-            {
-                Parents p{pickParents(population)};
-                Route offspring { createOffspring(std::move(p.first), std::move(p.second))};
-                if (distr(randomGen_) <= mutationProbability)
-                {
-                    mutate(offspring);
-                }
-                population[j] = std::move(offspring);
-            }
-        }
-        Route best { getFittest(population) };
-        return {calcCostOfRoute(best), std::move(best)};
-    };
-
     std::vector<std::future<Solution>> futures;
     for (auto i = 0U; i < std::thread::hardware_concurrency(); ++i)
     {
-        futures.emplace_back(std::async(std::launch::async, gen));
+        futures.emplace_back(std::async(std::launch::async,
+                [&](){return genetic(populationSize, mutationProbability, numOfGenerations);}));
     }
 
-    std::vector<Solution> solutions;
+    Population finalPopulation;
     for (auto& f : futures)
     {
-        solutions.emplace_back(f.get());
+        finalPopulation.emplace_back(f.get().route_);
     }
-    return *std::min_element(solutions.begin(), solutions.end(),
-            [](const Solution& lhs, const Solution& rhs){
-                return lhs.cost_ < rhs.cost_;
-            });
+
+    return genetic(finalPopulation.size(), mutationProbability, numOfGenerations, finalPopulation);
 }
 
 Route TSP::getFittest(const Population& population) const
