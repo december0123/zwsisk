@@ -5,7 +5,6 @@
 
 #include <atomic>
 #include <chrono>
-#include <functional>
 #include <future>
 #include <iostream>
 #include <mutex>
@@ -22,6 +21,10 @@ static std::mutex m;
 namespace ProjectUtilities
 {
 
+/*
+ * Prints given container in a form of
+ * c[0] c[1] c[2] ... c[n] \n
+ */
 template<typename T>
 void printContainer(const T& cont)
 {
@@ -32,8 +35,9 @@ void printContainer(const T& cont)
     std::cout << std::endl;
 }
 
-template<typename T, typename C>
-long double measureAverageTime(const unsigned numOfTests, const std::function<C()>& f)
+// Measures average execution time of given function
+template<typename T, typename Lambda>
+long double measureAverageTime(const unsigned numOfTests, Lambda&& f)
 {
     if (!numOfTests)
     {
@@ -47,36 +51,45 @@ long double measureAverageTime(const unsigned numOfTests, const std::function<C(
         auto end = Clock::now();
         times += std::chrono::duration<long double, T>(end - start).count();
     }
-
     return static_cast<long double>(times) / static_cast<long double>(numOfTests);
 }
 
+// Measures average genetic execution time
 long double measureAverageGeneticTime(const unsigned numOfTests, const TSP& tsp,
         const unsigned populationSize, const long double mutationProbability,
         const unsigned numberOfGenerations)
 {
-    return measureAverageTime<Milli, Solution>(numOfTests,
-            std::bind(&TSP::genetic, &tsp, populationSize, mutationProbability,
-                    numberOfGenerations));
+    return measureAverageTime<Milli>(numOfTests,
+            [&](){return tsp.genetic(populationSize, mutationProbability, numberOfGenerations);}
+    );
 }
 
+// Measures average genetic_multi execution time
 long double measureAverageGeneticTime_multi(const unsigned numOfTests, const TSP& tsp,
         const unsigned populationSize, const long double mutationProbability,
         const unsigned numberOfGenerations)
 {
-    return measureAverageTime<Milli, Solution>(numOfTests,
-            std::bind(&TSP::genetic_multi, &tsp, populationSize, mutationProbability,
-                    numberOfGenerations));
+    return measureAverageTime<Milli>(numOfTests,
+            [&](){
+                return tsp.genetic_multi(populationSize, mutationProbability, numberOfGenerations);
+            }
+    );
 }
 
+// Measures average bruteforce execution time
 long double measureAverageBruteForceTime(const unsigned numOfTests, const TSP& tsp)
 {
-    return measureAverageTime<Milli, Solution>(numOfTests, std::bind(&TSP::bruteForce, &tsp));
+    return measureAverageTime<Milli>(numOfTests, [&](){return tsp.bruteForce();});
 }
 
-template<typename T>
-long double measureAverageRelativeError(const int numOfTests, const std::function<T()>& f1,
-        const std::function<T()>& f2)
+/*
+ * Calculates error of funtion "f2" relative to function "f1".
+ * Only function f2 is launched multiple times in parallel.
+ * Function f1 is launched only once (created to measure error relative to brute force).
+ */
+template<typename Lambda, typename Lambda2>
+long double measureAverageRelativeError(const int numOfTests, Lambda&& f1,
+        Lambda2&& f2)
 {
     unsigned numOfThreads = std::thread::hardware_concurrency();
     while (numOfTests % numOfThreads)
@@ -84,12 +97,55 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
         --numOfThreads;
     }
 
-    std::atomic<unsigned> sumOfGenCosts { 0U };
+    std::atomic<unsigned> sumOfF2Costs { 0U };
+    auto f2Tester = [&]()
+    {
+        for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
+        {
+            sumOfF2Costs += f2().cost_;
+        }
+    };
+
+    std::vector<std::thread> threads(numOfThreads);
+    for (auto& t : threads)
+    {
+        t = std::thread { f2Tester };
+    }
+
+    const long double f1Cost = f1().cost_;
+
+    for (auto& t : threads)
+    {
+        t.join();
+    }
+
+    long double averageF2Cost { static_cast<long double>(sumOfF2Costs.load())
+            / static_cast<long double>(numOfTests) };
+    return std::abs((f1Cost - averageF2Cost)) / f1Cost;
+}
+
+/*
+ * Both of them are launched multiple times in parallel
+ * Calculates error of funtion "f2" relative to function "f1".
+ */
+template<typename Lambda, typename Lambda2>
+long double measureAverageRelativeError_multi(const int numOfTests, Lambda&& f1,
+        Lambda2&& f2)
+{
+    unsigned numOfThreads = std::thread::hardware_concurrency();
+    while (numOfTests % numOfThreads)
+    {
+        --numOfThreads;
+    }
+
+    std::atomic<unsigned> sumOfF1Costs { 0U };
+    std::atomic<unsigned> sumOfF2Costs { 0U };
     auto mGen = [&]()
     {
         for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
         {
-            sumOfGenCosts += f2().cost_;
+            sumOfF1Costs += f1().cost_;
+            sumOfF2Costs += f2().cost_;
         }
     };
 
@@ -99,78 +155,41 @@ long double measureAverageRelativeError(const int numOfTests, const std::functio
         t = std::thread { mGen };
     }
 
-    const long double bf = f1().cost_;
-
     for (auto& t : threads)
     {
         t.join();
     }
 
-    long double genCost { static_cast<long double>(sumOfGenCosts.load())
+    const long double f1Cost { static_cast<long double>(sumOfF1Costs.load())
             / static_cast<long double>(numOfTests) };
-    return bf - genCost;
-}
-
-template<typename T>
-long double measureAverageRelativeError_multi(const int numOfTests, const std::function<T()>& single,
-        const std::function<T()>& multi)
-{
-    unsigned numOfThreads = std::thread::hardware_concurrency();
-    while (numOfTests % numOfThreads)
-    {
-        --numOfThreads;
-    }
-
-    std::atomic<unsigned> sumOfGenCosts { 0U };
-    std::atomic<unsigned> sumOfGen_multiCosts { 0U };
-    auto mGen = [&]()
-    {
-        for (unsigned i = 0; i < numOfTests / numOfThreads; ++i)
-        {
-            sumOfGenCosts += single().cost_;
-            sumOfGen_multiCosts += multi().cost_;
-        }
-    };
-
-    std::vector<std::thread> threads(numOfThreads);
-    for (auto& t : threads)
-    {
-        t = std::thread { mGen };
-    }
-
-    for (auto& t : threads)
-    {
-        t.join();
-    }
-
-    long double genCost { static_cast<long double>(sumOfGenCosts.load())
+    const long double f2Cost { static_cast<long double>(sumOfF2Costs.load())
             / static_cast<long double>(numOfTests) };
-    long double gen_multiCost { static_cast<long double>(sumOfGen_multiCosts.load())
-            / static_cast<long double>(numOfTests) };
-    return (genCost - gen_multiCost) / genCost;
+    return std::abs((f2Cost - f1Cost)) / f2Cost;
 }
 
 /*
  * Launches BruteForce and Genetic to calculate relative error.
  * Remember that BruteForce is O(n!) so use it carefuly.
  */
-long double measureGeneticQuality(const unsigned numOfTests, const TSP& tsp,
+long double measureGeneticErrorRelativeToBruteForce(const unsigned numOfTests, const TSP& tsp,
         const unsigned populationSize, const long double mutationProbability,
         const unsigned numberOfGenerations)
 {
-    return measureAverageRelativeError<Solution>(numOfTests, std::bind(&TSP::bruteForce, &tsp),
-            std::bind(&TSP::genetic, &tsp, populationSize, mutationProbability,
-                    numberOfGenerations));
+    return measureAverageRelativeError(numOfTests, [&](){return tsp.bruteForce();},
+            [&](){return tsp.genetic(populationSize, mutationProbability, numberOfGenerations);}
+    );
 }
 
-long double measureGeneticQuality_multi(const unsigned numOfTests, const TSP& tsp,
+// Launches Genetic and Genetic_multi to calculate relative error.
+long double measureGeneticErrorRelativeToMulti(const unsigned numOfTests, const TSP& tsp,
         const unsigned populationSize, const long double mutationProbability,
         const unsigned numberOfGenerations)
 {
-    return measureAverageRelativeError_multi<Solution>(numOfTests, std::bind(&TSP::genetic, &tsp,
-            populationSize, mutationProbability, numberOfGenerations),
-            std::bind(&TSP::genetic_multi, &tsp, populationSize, mutationProbability,
-                    numberOfGenerations));
+    return measureAverageRelativeError_multi(numOfTests,
+            [&](){return tsp.genetic_multi(populationSize, mutationProbability,
+                    numberOfGenerations);},
+            [&](){return tsp.genetic(populationSize, mutationProbability, numberOfGenerations);}
+    );
 }
 
 }
