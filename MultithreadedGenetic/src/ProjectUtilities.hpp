@@ -125,8 +125,8 @@ long double measureAverageRelativeError(const int numOfTests, Lambda&& f1,
 }
 
 /*
- * Both of them are launched multiple times in parallel
  * Calculates error of funtion "f2" relative to function "f1".
+ * Both of them are launched multiple times in parallel
  */
 template<typename Lambda, typename Lambda2>
 long double measureAverageRelativeError_multi(const int numOfTests, Lambda&& f1,

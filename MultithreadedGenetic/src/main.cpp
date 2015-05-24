@@ -16,8 +16,8 @@ int main(int argc, char **argv)
     constexpr unsigned POPULATION_SIZE = 20;
     constexpr long double MUTATION_PROBABILITY = 0.01;
     constexpr unsigned NUM_OF_GENERATIONS = 20;
-    const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
-//    const TSP tsp("/home/dec/studia/sem6/zwsisk/swiss42.tsp");
+//    const TSP tsp(NUM_OF_CITIES, MIN_COST, MAX_COST);
+    const TSP tsp("/home/dec/studia/sem6/zwsisk/graph_lower.txt");
     Solution s = tsp.genetic(POPULATION_SIZE, MUTATION_PROBABILITY, NUM_OF_GENERATIONS);
     std::cout << "Koszt genetyczny: " << s.cost_ << std::endl;
     s = tsp.bruteForce();

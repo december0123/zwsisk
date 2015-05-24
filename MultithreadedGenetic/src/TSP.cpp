@@ -1,6 +1,7 @@
 #include "TSP.hpp"
 
 #include <algorithm>
+#include <climits>
 #include <future>
 #include <random>
 #include <utility>
@@ -216,10 +217,10 @@ Solution TSP::genetic_multi(const unsigned populationSize, const long double mut
 
 Route TSP::getFittest(const Population& population) const
 {
-    return *std::max_element(population.begin(), population.end(),
+    return *std::min_element(population.begin(), population.end(),
             [this](const Route& lhs, const Route& rhs)
             {
-                return calcCostOfRoute(lhs) > calcCostOfRoute(rhs);
+                return calcCostOfRoute(lhs) < calcCostOfRoute(rhs);
             });
 }
 
