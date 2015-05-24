@@ -68,6 +68,25 @@ unsigned TSP::calcCostOfRoute(const Route& route) const
     return cost;
 }
 
+Solution TSP::genetic_multi(const unsigned populationSize, const long double mutationProbability,
+        const unsigned numOfGenerations) const
+{
+    std::vector<std::future<Solution>> futures;
+    for (auto i = 0U; i < std::thread::hardware_concurrency(); ++i)
+    {
+        futures.emplace_back(std::async(std::launch::async,
+                [&](){return genetic(populationSize, mutationProbability, numOfGenerations);}));
+    }
+
+    Population finalPopulation;
+    for (auto& f : futures)
+    {
+        finalPopulation.emplace_back(f.get().route_);
+    }
+
+    return genetic(finalPopulation.size(), mutationProbability, numOfGenerations, finalPopulation);
+}
+
 Solution TSP::genetic(const unsigned populationSize, const long double mutationProbability,
         const unsigned numOfGenerations, Population pop /*= Population(0)*/) const
 {
@@ -174,25 +193,6 @@ void TSP::mutate(Route& route) const
 bool TSP::routeContainsCity(const Route& route, const unsigned city) const
 {
     return std::find(route.begin(), route.end(), city) != route.end();
-}
-
-Solution TSP::genetic_multi(const unsigned populationSize, const long double mutationProbability,
-        const unsigned numOfGenerations) const
-{
-    std::vector<std::future<Solution>> futures;
-    for (auto i = 0U; i < std::thread::hardware_concurrency(); ++i)
-    {
-        futures.emplace_back(std::async(std::launch::async,
-                [&](){return genetic(populationSize, mutationProbability, numOfGenerations);}));
-    }
-
-    Population finalPopulation;
-    for (auto& f : futures)
-    {
-        finalPopulation.emplace_back(f.get().route_);
-    }
-
-    return genetic(finalPopulation.size(), mutationProbability, numOfGenerations, finalPopulation);
 }
 
 Route TSP::getFittest(const Population& population) const
