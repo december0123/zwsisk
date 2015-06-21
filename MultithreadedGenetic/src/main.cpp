@@ -10,7 +10,7 @@ using namespace ProjectUtilities;
 int main(int argc, char **argv)
 {
     constexpr unsigned NUM_OF_TESTS = 10;
-    constexpr unsigned NUM_OF_CITIES = 9;
+    constexpr unsigned NUM_OF_CITIES = 25;
     constexpr unsigned MIN_COST = 1;
     constexpr unsigned MAX_COST = 200;
     constexpr unsigned POPULATION_SIZE = 150;
@@ -27,14 +27,14 @@ int main(int argc, char **argv)
     std::cout << "Koszt multi genetyczny: " << s.cost_ << std::endl;
 //    printContainer(s.route_);
 
-//    std::cout << "Sredni czas genetycznego dla " + std::to_string(NUM_OF_CITIES) + " miast: "
-//            << measureAverageGeneticTime(NUM_OF_TESTS, tsp, POPULATION_SIZE, MUTATION_PROBABILITY,
-//                    NUM_OF_GENERATIONS) << "ms\n";
+    std::cout << "Sredni czas genetycznego dla " + std::to_string(tsp.getNumOfCities()) + " miast: "
+            << measureAverageGeneticTime(NUM_OF_TESTS, tsp, POPULATION_SIZE, MUTATION_PROBABILITY,
+                    NUM_OF_GENERATIONS) << "ms\n";
 
-//    std::cout << "Sredni czas multi genetycznego dla " + std::to_string(NUM_OF_CITIES) + " miast: "
-//            << measureAverageGeneticTime_multi(NUM_OF_TESTS, tsp, POPULATION_SIZE,
-//                    MUTATION_PROBABILITY, NUM_OF_GENERATIONS) << "ms\n";
-//    std::cout << "Sredni czas brute dla " + std::to_string(NUM_OF_CITIES) + " miast: "
+    std::cout << "Sredni czas multi genetycznego dla " + std::to_string(tsp.getNumOfCities()) + " miast: "
+            << measureAverageGeneticTime_multi(NUM_OF_TESTS, tsp, POPULATION_SIZE,
+                    MUTATION_PROBABILITY, NUM_OF_GENERATIONS) << "ms\n";
+//    std::cout << "Sredni czas brute dla " + std::to_string(tsp.getNumOfCities()) + " miast: "
 //            << measureAverageBruteForceTime(NUM_OF_TESTS, tsp) << "ms\n";
 //    std::cout << "Sredni blad genetycznego wzgledem bruteforca: "
 //            << measureGeneticErrorRelativeToBruteForce(NUM_OF_TESTS, tsp, POPULATION_SIZE,
